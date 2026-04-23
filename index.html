@@ -718,22 +718,22 @@ Turning <em>user frustration into elegant features</em>.
 <p data-db-key="contactDesc">Open to Product Manager, APM, and Program Manager roles. If you're building something ambitious and need someone who bridges strategy with execution — I'd love to connect.</p>
 </div>
 <div class="ct-links rev">
-<a href="javascript:void(0)" class="cl">
+<a href="#" id="email-action" class="cl">
 <span class="cl-icon">✉️</span>
 <div><div class="cl-type">Email</div><div class="cl-val" data-db-key="clEmail">varunupadhyay500@gmail.com</div></div>
 <span class="cl-arr">→</span>
 </a>
-<a href="javascript:void(0)" class="cl">
+<a href="tel:+919068582274" class="cl">
 <span class="cl-icon">📱</span>
 <div><div class="cl-type">Phone</div><div class="cl-val" data-db-key="clPhone">+91 90685 82274</div></div>
 <span class="cl-arr">→</span>
 </a>
-<a href="javascript:void(0)" class="cl">
+<a href="https://www.linkedin.com/in/varun-upadhyay-349424233" target="_blank" rel="noopener noreferrer" class="cl">
 <span class="cl-icon">💼</span>
 <div><div class="cl-type">LinkedIn</div><div class="cl-val" data-db-key="clLinkedIn">varun-upadhyay-349424233</div></div>
 <span class="cl-arr">→</span>
 </a>
-<a href="javascript:void(0)" class="cl">
+<a href="#" onclick="window.print();return false;" class="cl">
 <span class="cl-icon">📄</span>
 <div><div class="cl-type">Resume</div><div class="cl-val" data-db-key="clResume">Download / Print PDF</div></div>
 <span class="cl-arr">→</span>
@@ -873,6 +873,36 @@ document.addEventListener('mouseleave', (e) => {
 window.addEventListener('scroll',()=>{
     document.getElementById('nav').classList.toggle('scrolled',window.scrollY>50);
 });
+
+/* SMART EMAIL LINK HANDLER */
+document.getElementById('email-action').addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    // Fetch the dynamically loaded email from the DOM, or fallback to the default
+    const emailEl = document.querySelector('[data-db-key="clEmail"]');
+    const emailAddress = emailEl ? emailEl.textContent.trim() : 'varunupadhyay500@gmail.com';
+    
+    // Simple check for mobile devices
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // Attempt to launch default mail client (Gmail app, Outlook app, Apple Mail, etc.)
+        const startTime = Date.now();
+        window.location.href = `mailto:${emailAddress}`;
+        
+        // Mobile Fallback: If no app captures the intent quickly, open Gmail in the web browser
+        setTimeout(() => {
+            if (Date.now() - startTime < 1500) {
+                window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddress}`, '_blank');
+            }
+        }, 1000);
+        
+    } else {
+        // Desktop browsers: Skip the annoying OS prompt and directly open Gmail in a new tab
+        window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddress}`, '_blank');
+    }
+});
+
 </script>
 
 </body>
