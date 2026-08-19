@@ -769,6 +769,31 @@ appId: "1:499512263269:web:a439351c4611de98063c8c"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ==========================================
+// REAL-TIME EXPERIENCE CALCULATOR
+// ==========================================
+function calculateRealTimeExperience() {
+    // IDBI Bank: July 2024 to Oct 2024 (Inclusive = 4 months)
+    const idbiMonths = 4; 
+    
+    // Infosys: Dec 2024 to Present
+    const infoStart = new Date(2024, 11); // Month index 11 is December
+    const now = new Date();
+    let infoMonths = (now.getFullYear() - infoStart.getFullYear()) * 12 + (now.getMonth() - infoStart.getMonth());
+    if (infoMonths < 0) infoMonths = 0; // Prevent negative before Dec 2024
+    
+    const totalYears = ((idbiMonths + infoMonths) / 12).toFixed(1);
+    return totalYears;
+}
+
+const currentExp = calculateRealTimeExperience();
+
+// Immediately apply real-time calculation to statically rendered HTML (Pre-Firebase Load)
+document.querySelectorAll('[data-db-key="s1Val"]').forEach(el => el.textContent = currentExp);
+document.querySelectorAll('[data-db-key="heroDesc"], [data-db-key="aboutP1"]').forEach(el => {
+    el.innerHTML = el.innerHTML.replace(/\b\d+\.\d+(?=\+?\s*years?)/gi, currentExp);
+});
+
 async function loadPortfolioData() {
     try {
         const docRef = doc(db, "portfolio", "livedata");
@@ -780,7 +805,16 @@ async function loadPortfolioData() {
             document.querySelectorAll('[data-db-key]').forEach(el => {
                 const key = el.getAttribute('data-db-key');
                 if (data[key]) {
-                    el.innerHTML = data[key]; 
+                    let val = data[key];
+                    
+                    // Intercept Firebase data to ensure experience remains real-time
+                    if (key === 's1Val') {
+                        val = currentExp;
+                    } else if (typeof val === 'string' && (key === 'heroDesc' || key === 'aboutP1')) {
+                        val = val.replace(/\b\d+\.\d+(?=\+?\s*years?)/gi, currentExp);
+                    }
+                    
+                    el.innerHTML = val; 
                 }
             });
         }
